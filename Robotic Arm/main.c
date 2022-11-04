@@ -18,7 +18,7 @@
 // FWDT
 #pragma config WDTPOST = PS32768        // Watchdog Timer Postscaler bits (1:32,768)
 #pragma config WDTPRE = PR128           // Watchdog Timer Prescaler bit (1:128)
-#pragma config PLLKEN = ON              // PLL Lock Enable bit (Clock switch to PLL source will wait until the PLL lock signal is valid.)
+#pragma config PLLKEN = OFF              // PLL Lock Enable bit (Clock switch to PLL source will wait until the PLL lock signal is valid.)
 #pragma config WINDIS = OFF             // Watchdog Timer Window Enable bit (Watchdog Timer in Non-Window mode)
 #pragma config FWDTEN = OFF             // Watchdog Timer Enable bit (Watchdog timer enabled/disabled by user software)
 
@@ -53,7 +53,7 @@ volatile char usbRxval[50];     //The UART receive array which holds the data se
                                 //via USB from the Raspberry Pi
 volatile char rxval[50];     //The UART receive array which holds the data sent 
                                 //via USB from the Raspberry Pi
-int x = 0, y = 0;
+int x = 0, y = 0, up = 0, down = 0, left = 0, right = 0;
 void __attribute__((__interrupt__, auto_psv)) _U1RXInterrupt(void)             
 {
     IFS0bits.U1RXIF = 0;        //Clear the interrupt flag
