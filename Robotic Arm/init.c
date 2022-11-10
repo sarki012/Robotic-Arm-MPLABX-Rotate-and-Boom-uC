@@ -53,8 +53,8 @@ void init(void)
     U2MODEbits.RTSMD = 0;   // Bit11 Simplex Mode
     U2MODEbits.PDSEL0 = 0;      
     U2MODEbits.STSEL = 0;       //One stop bit 
-    INTCON2bits.GIE = 1;        //Global interrupt enable bit (disabled)
-    IEC1bits.U2RXIE = 1;        //UART 2 interrupt disabled 
+    INTCON2bits.GIE = 1;        //Global interrupt enable bit enabled
+    IEC1bits.U2RXIE = 1;        //UART 2 interrupt enabled 
     IFS1bits.U2RXIF = 0;       //Reset RX interrupt flag 
     IPC7bits.U2RXIP = 7;        //Set RX interrupt priority to high priority
     U2STAbits.URXISEL1 = 0;     //Interrupt is set when there is 1 char
@@ -85,7 +85,7 @@ void init(void)
     U1MODEbits.RTSMD = 0;       // Bit11 Simplex Mode
     U1MODEbits.PDSEL0 = 0;      
     U1MODEbits.STSEL = 0;       //One stop bit 
-    IEC0bits.U1RXIE = 0;        //UART 1 interrupt disabled
+    IEC0bits.U1RXIE = 1;        //UART 1 interrupt disabled
     IFS0bits.U1RXIF = 0;        //Reset RX interrupt flag 
     IPC2bits.U1RXIP = 7;        //Set RX interrupt priority to high priority
     U1STAbits.URXISEL1 = 0;     //Interrupt is set when there is 1 char

@@ -49,9 +49,9 @@
 #include "FreeRTOSConfig.h"
 #include "main.h"
 
-volatile char usbRxval[50];     //The UART receive array which holds the data sent 
+volatile char usbRxval[5];     //The UART receive array which holds the data sent 
                                 //via USB from the Raspberry Pi
-volatile char rxval[50];     //The UART receive array which holds the data sent 
+volatile char rxval[5];     //The UART receive array which holds the data sent 
                                 //via USB from the Raspberry Pi
 int x = 0, y = 0, up = 0, down = 0, left = 0, right = 0;
 void __attribute__((__interrupt__, auto_psv)) _U1RXInterrupt(void)             
@@ -59,7 +59,7 @@ void __attribute__((__interrupt__, auto_psv)) _U1RXInterrupt(void)
     IFS0bits.U1RXIF = 0;        //Clear the interrupt flag
     usbRxval[x] = U1RXREG;         //Add the value in the receive register to the receive array
     x++;
-    if(x == 50)
+    if(x == 5)
     {  
         x = 0;
     }
@@ -71,7 +71,7 @@ void __attribute__((__interrupt__, auto_psv)) _U2RXInterrupt(void)
     IFS1bits.U2RXIF = 0;        //Clear the interrupt flag
     rxval[y] = U2RXREG;         //Add the value in the receive register to the receive array
     y++;
-    if(y == 50)
+    if(y == 5)
     {  
         y = 0;
     }
@@ -84,7 +84,7 @@ void __attribute__((__interrupt__, auto_psv)) _DefaultInterrupt(void)
 
 void main(void) {
     int i = 0;
-    for(i = 0; i < 50; i++)
+    for(i = 0; i < 5; i++)
     {
         usbRxval[i] = 0;
         rxval[i] = 0;       //Initialize the receive array to all 0's

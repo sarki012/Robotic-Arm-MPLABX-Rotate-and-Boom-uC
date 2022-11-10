@@ -13,7 +13,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-volatile extern char usbRxval[50];     //The UART receive array which holds the data sent 
+volatile extern char usbRxval[5];     //The UART receive array which holds the data sent 
                                     //via Bluetooth from the tablet
 void boomThread( void *pvParameters )
 {
@@ -24,7 +24,7 @@ void boomThread( void *pvParameters )
     PDC2 = 3870;            //Duty cycle register. Starting duty cycle is x. Max + PDCx = 1658, max - PDCx = 3870
     while(1)
     {
-        for(i = 0; i < 45; i++)
+        for(i = 0; i < 5; i++)
         {
             if(usbRxval[i] != '!' && usbRxval[i] != '@')
             {
