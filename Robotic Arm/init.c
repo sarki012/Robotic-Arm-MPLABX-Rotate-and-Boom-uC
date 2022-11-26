@@ -1,4 +1,4 @@
-/*
+ /*
  * File:   servo_init.c
  * Author: Erik Sarkinen
  *
@@ -13,13 +13,38 @@
 
 void init(void)
 { 
-    int i = 0;
-    OSCCONbits.NOSC0 = 0;       //Fast RC Oscillator
-    OSCCONbits.NOSC1 = 0;       //Fast RC Oscillator
-    OSCCONbits.NOSC2 = 0;       //Fast RC Oscillator
-    OSCCONbits.OSWEN = 1;       //Requests oscillator switch to selection specified by the NOSC[2:0] bits
-    OSCTUN = 0;         //Center frequency 7.37 MHz
+
     
+    int i = 0;
+    //OSCCONbits.NOSC0 = 0;       //Fast RC Oscillator w/ PLL
+    //OSCCONbits.NOSC1 = 0;       //Fast RC Oscillator
+   // OSCCONbits.NOSC2 = 0;       //Fast RC Oscillator
+  //  OSCCONbits.OSWEN = 1;       //Requests oscillator switch to selection specified by the NOSC[2:0] bits
+    //OSCTUN = 0;         //Center frequency 7.37 MHz
+
+    
+    PLLFBD = 0b0000000000111111;     //PLLDIV, M, PLL Multiplier = 65
+  //  PLLFBD = 0b0000000001100010;     //PLLDIV, M, PLL Multiplier = 100
+    
+    CLKDIVbits.PLLPRE0 = 0;         //Divide by 2
+    CLKDIVbits.PLLPRE1 = 0;
+    CLKDIVbits.PLLPRE2 = 0;
+    CLKDIVbits.PLLPRE3 = 0;
+    CLKDIVbits.PLLPRE4 = 0;
+    
+    CLKDIVbits.PLLPOST0 = 0;        //Output Divided by 4
+    CLKDIVbits.PLLPOST1 = 0;        
+
+    CLKDIVbits.FRCDIV0 = 0;     //Divide by 1
+    CLKDIVbits.FRCDIV1 = 0;
+    CLKDIVbits.FRCDIV2 = 0;
+    
+    __builtin_write_OSCCONH(1) ; // 1 = FRCPLL clock selection
+    __builtin_write_OSCCONL(1) ; // Sets OSWEN bit
+    // Wait for Clock switch to occur
+    while (OSCCONbits.COSC!= 0b001);
+    // Wait for PLL to lock
+    while (OSCCONbits.LOCK!= 1);
     ///////////////////Remappable Pins//////////////////////////////
     RPINR18 = 0b0000000000100110;       //U1RX = RP38
     RPINR19 = 0b0000000000100101;       //U2RX = RP37 
@@ -32,8 +57,8 @@ void init(void)
     LATBbits.LATB11 = 0;        //2A digital current control
     TRISAbits.TRISA4 = 0;       //Enable
     TRISBbits.TRISB0 = 0;       //Direction
-    TRISBbits.TRISB1 = 0;       //MS1
-    TRISBbits.TRISB4 = 0;       //MS2
+    TRISBbits.TRISB1 = 1;       //MS1   1/8 Step
+    TRISBbits.TRISB4 = 1;       //MS2
 
     ///////////////////UART2 -> USB//////////////////////////////////
     U2MODEbits.UARTEN = 0;      //UART2 is disabled
@@ -116,7 +141,10 @@ void init(void)
     PTCONbits.SYNCSRC0 = 0;     //Synchronous Source is PTGO17
     PTCONbits.SYNCSRC1 = 1;
     PTCONbits.SYNCSRC2 = 0;
-    PTCON2bits.PCLKDIV0 = 0;      //010 divide by 4 prescaler *Adjust this depending on resolution
+    
+    //Make the resolution finer. Divide by 1 prescaler with F = 300 Hz
+    
+    PTCON2bits.PCLKDIV0 = 1;      //011 divide by 8 prescaler *Adjust this depending on resolution
     PTCON2bits.PCLKDIV1 = 1;
     PTCON2bits.PCLKDIV2 = 0;
     PTCONbits.PTSIDL = 0;
