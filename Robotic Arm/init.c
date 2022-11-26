@@ -16,13 +16,13 @@ void init(void)
 
     
     int i = 0;
-    //OSCCONbits.NOSC0 = 0;       //Fast RC Oscillator w/ PLL
-    //OSCCONbits.NOSC1 = 0;       //Fast RC Oscillator
-   // OSCCONbits.NOSC2 = 0;       //Fast RC Oscillator
-  //  OSCCONbits.OSWEN = 1;       //Requests oscillator switch to selection specified by the NOSC[2:0] bits
-    //OSCTUN = 0;         //Center frequency 7.37 MHz
+    OSCCONbits.NOSC0 = 0;       //Fast RC Oscillator
+    OSCCONbits.NOSC1 = 0;       //Fast RC Oscillator
+    OSCCONbits.NOSC2 = 0;       //Fast RC Oscillator
+    OSCCONbits.OSWEN = 1;       //Requests oscillator switch to selection specified by the NOSC[2:0] bits
+    OSCTUN = 0;         //Center frequency 7.37 MHz
 
-    
+    /*
     PLLFBD = 0b0000000000111111;     //PLLDIV, M, PLL Multiplier = 65
   //  PLLFBD = 0b0000000001100010;     //PLLDIV, M, PLL Multiplier = 100
     
@@ -45,6 +45,7 @@ void init(void)
     while (OSCCONbits.COSC!= 0b001);
     // Wait for PLL to lock
     while (OSCCONbits.LOCK!= 1);
+     */ 
     ///////////////////Remappable Pins//////////////////////////////
     RPINR18 = 0b0000000000100110;       //U1RX = RP38
     RPINR19 = 0b0000000000100101;       //U2RX = RP37 
@@ -144,7 +145,7 @@ void init(void)
     
     //Make the resolution finer. Divide by 1 prescaler with F = 300 Hz
     
-    PTCON2bits.PCLKDIV0 = 1;      //011 divide by 8 prescaler *Adjust this depending on resolution
+    PTCON2bits.PCLKDIV0 = 0;      //010 divide by 4 prescaler *Adjust this depending on resolution
     PTCON2bits.PCLKDIV1 = 1;
     PTCON2bits.PCLKDIV2 = 0;
     PTCONbits.PTSIDL = 0;
