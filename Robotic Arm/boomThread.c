@@ -18,7 +18,7 @@ volatile extern char usbRxval[20];     //The UART receive array which holds the 
 void boomThread( void *pvParameters )
 {
     int  i = 0, direction = 0;
-    int numDelayLoops = 2000;
+    int numDelayLoops = 500;       //Was 2000
     PHASE2 = 36850;         //Fosc = 120 MHz, Prescaler = 8, PHASE2 = 50,000
     PDC2 = 3500;           //Min PDC2 = 16,636, Max PDC2 = 31,818
    //PHASE2 = 6142;
