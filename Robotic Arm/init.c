@@ -58,9 +58,11 @@ void init(void)
     LATBbits.LATB11 = 0;        //2A digital current control
     TRISAbits.TRISA4 = 0;       //Enable
     TRISBbits.TRISB0 = 0;       //Direction
-    TRISBbits.TRISB1 = 1;       //MS1   1/8 Step
-    TRISBbits.TRISB4 = 1;       //MS2
-
+    TRISBbits.TRISB1 = 0;       //MS1 Step
+    TRISBbits.TRISB4 = 0;       //MS2
+    LATBbits.LATB1 = 0;         //MS1 Full step
+    LATBbits.LATB4 = 0;         //MS2 Full step
+    
     ///////////////////UART2 -> USB//////////////////////////////////
     U2MODEbits.UARTEN = 0;      //UART2 is disabled
     TRISBbits.TRISB9 = 1;       //U2 TX
