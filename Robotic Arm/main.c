@@ -53,7 +53,11 @@ volatile char usbRxval[20];     //The UART receive array which holds the data se
                                 //via USB from the Raspberry Pi
 volatile char rxval[20];     //The UART receive array which holds the data sent 
                                 //via USB from the Raspberry Pi
+volatile double boomAvg = 0;
+
 int x = 0, y = 0, up = 0, down = 0, left = 0, right = 0;
+
+//Uart1 receive interrupt, receiving characters from the Raspberry Pi
 void __attribute__((__interrupt__, auto_psv)) _U1RXInterrupt(void)             
 {
     IFS0bits.U1RXIF = 0;        //Clear the interrupt flag
@@ -90,10 +94,13 @@ void main(void) {
         rxval[i] = 0;       //Initialize the receive array to all 0's
     }
     init();     //Setup clock, UART, and PWMs
+    initAdc1();
+    initTmr3();
+    initDma0();
     
     xTaskCreate( rotateThread, "Rotate", 512, NULL, 1, NULL );      //Thread that controls rotation
 	xTaskCreate( boomThread, "Boom", 512, NULL, 1, NULL );      //Thread that controls the boom
-
+    xTaskCreate( feedbackThread, "Feedback", 512, NULL, 1, NULL );      //Thread that sends the ADC values to the Raspberry PI
 	//Start the scheduler
 	vTaskStartScheduler();
 
