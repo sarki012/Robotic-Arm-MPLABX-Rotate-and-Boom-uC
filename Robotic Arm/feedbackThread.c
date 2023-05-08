@@ -16,12 +16,12 @@ volatile extern char usbRxval[20];     //The UART receive array which holds the 
 
 //The DMA puts the ADC value in bufferA
 volatile extern __eds__ unsigned int bufferA[SAMP_BUFF_SIZE] __attribute__((eds,aligned(128)));
+volatile extern double boomAvg;
 
 void feedbackThread( void *pvParameters )
 {
     int i = 0, count = 0;
     unsigned long int boomAvgBuffer = 0;
-    double boomAvg;
     while(1)
     {
         boomAvgBuffer += bufferA[i];    //bufferA is an array that holds the DMA ADC values
@@ -32,8 +32,8 @@ void feedbackThread( void *pvParameters )
         if(count == bufferSize)
         {
             boomAvg = boomAvgBuffer/bufferSize;       //Average
-            sendChar('b');      //Send 'b' for boom
-            intToChar((int)boomAvg);       //intToChar converts the integer to four characters and sends them out on UART1
+            sendCharUart1('b');      //Send 'b' for boom
+            intToCharUart1((int)boomAvg);       //intToChar converts the integer to four characters and sends them out on UART1
             boomAvgBuffer = 0;
             count = 0;
             

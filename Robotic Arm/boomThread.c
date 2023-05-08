@@ -15,9 +15,12 @@
 
 volatile extern char usbRxval[20];     //The UART receive array which holds the data sent 
                                     //via Bluetooth from the tablet
+volatile extern char rxval[20];  
+volatile extern double boomAvg;
+
 void boomThread( void *pvParameters )
 {
-    int  i = 0, direction = 0;
+    int  i = 0, direction = 0, stick = 0;
     int numDelayLoops = 500;       //Was 2000
     PHASE2 = 36850;         //Fosc = 120 MHz, Prescaler = 8, PHASE2 = 50,000
     PDC2 = 3500;           //Min PDC2 = 16,636, Max PDC2 = 31,818
@@ -29,6 +32,16 @@ void boomThread( void *pvParameters )
    
     while(1)
     {
+        sendCharUart2('z');
+        intToCharUart2((int)boomAvg);
+        for(i = 0; i < 15; i++)
+        {
+            if(rxval[i] == 'a')
+            {
+                stick = charToInt(rxval[i+1], rxval[i+2], rxval[i+3], rxval[i+4]);
+                break;
+            }
+        }
         for(i = 0; i < 20; i++)
         {
             if(usbRxval[i] == '@')
