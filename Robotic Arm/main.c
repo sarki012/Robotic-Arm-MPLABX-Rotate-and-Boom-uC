@@ -53,7 +53,7 @@ volatile char usbRxval[20];     //The UART receive array which holds the data se
                                 //via USB from the Raspberry Pi
 volatile char rxval[20];     //The UART receive array which holds the data sent 
                                 //via USB from the Raspberry Pi
-volatile double boomAvg = 0;
+volatile double boom = 0;
 
 int x = 0, y = 0, up = 0, down = 0, left = 0, right = 0;
 
