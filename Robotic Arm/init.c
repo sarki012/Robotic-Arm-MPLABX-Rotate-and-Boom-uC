@@ -19,33 +19,38 @@ void init(void)
     OSCCONbits.NOSC0 = 0;       //Fast RC Oscillator
     OSCCONbits.NOSC1 = 0;       //Fast RC Oscillator
     OSCCONbits.NOSC2 = 0;       //Fast RC Oscillator
-    OSCCONbits.OSWEN = 1;       //Requests oscillator switch to selection specified by the NOSC[2:0] bits
+ //   OSCCONbits.OSWEN = 1;       //Requests oscillator switch to selection specified by the NOSC[2:0] bits
     OSCTUN = 0;         //Center frequency 7.37 MHz
 
-    /*
+    
     PLLFBD = 0b0000000000111111;     //PLLDIV, M, PLL Multiplier = 65
   //  PLLFBD = 0b0000000001100010;     //PLLDIV, M, PLL Multiplier = 100
     
+    CLKDIVbits.PLLPRE = 0;      //Divide by 2
+    CLKDIVbits.PLLPOST = 0;     // Divide by 2
+    /*
     CLKDIVbits.PLLPRE0 = 0;         //Divide by 2
     CLKDIVbits.PLLPRE1 = 0;
     CLKDIVbits.PLLPRE2 = 0;
     CLKDIVbits.PLLPRE3 = 0;
     CLKDIVbits.PLLPRE4 = 0;
-    
-    CLKDIVbits.PLLPOST0 = 0;        //Output Divided by 4
+    */
+    /*
+    CLKDIVbits.PLLPOST0 = 0;        //Output Divided by 2
     CLKDIVbits.PLLPOST1 = 0;        
-
+     */
     CLKDIVbits.FRCDIV0 = 0;     //Divide by 1
     CLKDIVbits.FRCDIV1 = 0;
     CLKDIVbits.FRCDIV2 = 0;
     
     __builtin_write_OSCCONH(1) ; // 1 = FRCPLL clock selection
+ //   __builtin_write_OSCCONL(OSCCON | 0x01);
     __builtin_write_OSCCONL(1) ; // Sets OSWEN bit
     // Wait for Clock switch to occur
     while (OSCCONbits.COSC!= 0b001);
     // Wait for PLL to lock
     while (OSCCONbits.LOCK!= 1);
-     */ 
+      
     ///////////////////Remappable Pins//////////////////////////////
     RPINR18 = 0b0000000000100110;       //U1RX = RP38
     RPINR19 = 0b0000000000100101;       //U2RX = RP37 
@@ -90,7 +95,8 @@ void init(void)
     U2STAbits.ADDEN = 0;          //Address detect mode disabled
     U2STAbits.PERR = 0;         //Parity Error
     U2STAbits.OERR = 0;           //Clear the Receive //Overflow Flag.
-    U2BRG = 7;                 //BAUD RATE 115,200 Fosc = 7.37 Mhz, Fp = Fosc/2
+    U2BRG = 129;                 //BAUD RATE 115,200 Fosc = 120Mhz Mhz, Fp = Fosc/2
+    //U2BRG = 7;                 //BAUD RATE 115,200 Fosc = 7.37 Mhz, Fp = Fosc/2
     IEC1bits.U2TXIE = 0;        //No transmit interrupt (We poll TRMT)
     U2MODEbits.UARTEN = 1;      //UART2 is enabled
     U2STAbits.UTXEN = 1;        //Transmit enabled
@@ -122,7 +128,8 @@ void init(void)
     U1STAbits.PERR = 0;         //Parity Error
     U1STAbits.OERR = 0;         //Clear the Receive //Overflow Flag.
   //  U1BRG = 95;                 //BAUD RATE 9,600 Fosc = 7.37 Mhz, Fp = Fosc/2
-    U1BRG = 7;                 //BAUD RATE 115,200 Fosc = 7.37 Mhz, Fp = Fosc/2
+    U1BRG = 129;                 //BAUD RATE 115,200 Fosc = 120Mhz Mhz, Fp = Fosc/2
+    //U1BRG = 7;                 //BAUD RATE 115,200 Fosc = 7.37 Mhz, Fp = Fosc/2
     IEC0bits.U1TXIE = 0;        //No transmit interrupt (We poll TRMT)
     U1MODEbits.UARTEN = 1;      //UART1 is enabled
     U1STAbits.UTXEN = 1;        //Transmit enabled
@@ -147,9 +154,10 @@ void init(void)
     
     //Make the resolution finer. Divide by 1 prescaler with F = 300 Hz
     
-    PTCON2bits.PCLKDIV0 = 0;      //010 divide by 4 prescaler *Adjust this depending on resolution
-    PTCON2bits.PCLKDIV1 = 1;
-    PTCON2bits.PCLKDIV2 = 0;
+    PTCON2bits.PCLKDIV = 4;     //Divide by 16 prescalar
+  //  PTCON2bits.PCLKDIV0 = 0;      //010 divide by 4 prescaler *Adjust this depending on resolution
+    //PTCON2bits.PCLKDIV1 = 1;
+    //PTCON2bits.PCLKDIV2 = 0;
     PTCONbits.PTSIDL = 0;
     PTCONbits.EIPU = 0;
     PTCONbits.SYNCPOL = 0;
