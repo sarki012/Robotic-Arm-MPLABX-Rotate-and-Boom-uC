@@ -31,14 +31,13 @@ void feedbackThread( void *pvParameters )
         //Only going to send the average every bufferSize loops of the thread
         if(count == bufferSize)
         {
-            boom = boomAvgBuffer/bufferSize;       //Average
+            boom = ((605 - (boomAvgBuffer/bufferSize))/3) + 25;       //Average
             sendCharUart1('b');      //Send 'b' for boom
             intToCharUart1((int)boom);       //intToChar converts the integer to four characters and sends them out on UART1
             boomAvgBuffer = 0;
             count = 0;
             
         } 
-              //Increment by 2 because data is in words
         if(i >= 8)
         {
             i = 0;

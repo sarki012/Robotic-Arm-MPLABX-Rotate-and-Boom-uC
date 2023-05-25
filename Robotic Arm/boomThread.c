@@ -26,10 +26,10 @@ void boomThread( void *pvParameters )
 {
     int  i = 0, direction = 0, stick = 0;
     int numDelayLoops = 3000;       //Was 2000
-    PHASE2 = 62500;
-    PDC2 = 10000;
-  //  PHASE2 = 36850;         //Fosc = 120 MHz, Prescaler = 8, PHASE2 = 50,000
-    //PDC2 = 3500;           //Min PDC2 = 16,636, Max PDC2 = 31,818
+   // PHASE2 = 62500;
+    //PDC2 = 10000;
+    PHASE2 = 36850;         //Fosc = 120 MHz, Prescaler = 8, PHASE2 = 50,000
+    PDC2 = 2500;           //Min PDC2 = 16,636, Max PDC2 = 31,818
    //PHASE2 = 6142;
    // PDC2 = 3906;
    // PHASE2 = 24567;         //24,567 for a 300 Hz Pulse with divide by 1 prescaler. PHASEx is always 36,850 for a 50Hz pulse
@@ -48,18 +48,18 @@ void boomThread( void *pvParameters )
             {
                 PDC2--;         //Decrementing the duty cycle moves the boom down
                 delay(numDelayLoops);
-                if(PDC2 < 6777)
+                if(PDC2 < 1658)
                 {
-                    PDC2 = 6777;        //We don't let PDC2 get less than 1658
+                    PDC2 = 1658;        //We don't let PDC2 get less than 1658
                 }
             }
             else if(usbRxval[i] == 'u')
             {
                 PDC2++;         //Incrementing the duty cycle moves the boom up
                 delay(numDelayLoops);
-                if(PDC2 > 15813)
+                if(PDC2 > 3870)
                 {
-                    PDC2 = 15813;        //We don't let PDC2 get greater than 3870
+                    PDC2 = 3870;        //We don't let PDC2 get greater than 3870
                 } 
             }
         }
