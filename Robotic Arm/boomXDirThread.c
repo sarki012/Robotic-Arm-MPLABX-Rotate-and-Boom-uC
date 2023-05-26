@@ -20,7 +20,8 @@
 
 volatile extern char usbRxval[20];     //The UART receive array which holds the data sent 
                                     //via Bluetooth from the tablet
-volatile extern char rxval[20];  
+volatile extern char rxval[20]; 
+
 //volatile extern double boom;
 //The DMA puts the ADC value in bufferA
 volatile extern __eds__ unsigned int bufferA[SAMP_BUFF_SIZE] __attribute__((eds,aligned(128)));
@@ -28,12 +29,17 @@ volatile extern __eds__ unsigned int bufferA[SAMP_BUFF_SIZE] __attribute__((eds,
 void boomXDirThread( void *pvParameters )
 {
     int  i = 0, j = 0, stick = 0;
+    double x = 4.5;
+    double xPrev = 4.5;
     unsigned int boom = 0;
     int numDelayLoops = 4000;       //Was 500 2000 1000 500 2000
-    double x = 0;
     int alpha = 0, alphaFB = 0;
-    PHASE2 = 62500;
-    PDC2 = 10000;
+    int breakFlag = 0;
+    PHASE2 = 36850;
+    PDC2 = 2500;
+  
+    //PHASE2 = 62500;       //For 120 Mhz with divide by 16 prescalar
+    //PDC2 = 10000;
    //PHASE2 = 6142;
    // PDC2 = 3906;
    // PHASE2 = 24567;         //24,567 for a 300 Hz Pulse with divide by 1 prescaler. PHASEx is always 36,850 for a 50Hz pulse
@@ -42,6 +48,7 @@ void boomXDirThread( void *pvParameters )
    
     while(1)
     {
+        breakFlag = 0;
         boom = bufferA[0];    //bufferA is an array that holds the DMA ADC values
         sendCharUart2('z');
         intToCharUart2((int)boom);
@@ -54,112 +61,108 @@ void boomXDirThread( void *pvParameters )
             else if(rxval[i] == 'x')
             {
                 x = charToInt(rxval[i+1], rxval[i+2], rxval[i+3], rxval[i+4]);
-                x /= 100;
+                x /= 10;
+                if(x < 4 || x > 10)
+                {
+                    x = xPrev;
+                }
+                if(x - xPrev == 0)
+                {
+                    breakFlag = 1;
+                }
                 break;
             }
         }
-        alpha = (int)((acos(x/12))*180/3.1416);
-        sendCharUart1('a');      //Send 'a' for alpha
-        intToCharUart1((int)alpha);       //intToChar converts the integer to four characters and sends them out on UART1
-       // alphaFB = (int)((600 - boom)/3 + 27);
-        alphaFB = (int)((600 - boom)/3 + 25);
-        sendCharUart1('A');      //Send 'A' for alphaFB
-        intToCharUart1((int)alphaFB);       //intToChar converts the integer to four characters and sends them out on UART1
-        for(i = 0; i < 20; i++)
+        if(breakFlag != 1)
         {
-            if(usbRxval[i] == '$')      //Stop motors
+            alpha = (int)((acos(x/12))*180/3.1416);
+            alphaFB = (int)((610 - boom)/3 + 25);
+            for(i = 0; i < 20; i++)
             {
-                break;
-            }
-            else if(usbRxval[i] == 'l')     //'O' for out
-            {
-                j = 0;
-                alpha = (int)((acos(x/12))*180/3.1416);
-                sendCharUart1('a');      //Send 'a' for alpha
-                intToCharUart1((int)alpha);       //intToChar converts the integer to four characters and sends them out on UART1
-                while(alphaFB > alpha)
+                if(usbRxval[i] == '$')      //Stop motors
                 {
-                    boom = bufferA[j];
-                    j++;
-                    if(j >= 8)
-                    {
-                        j = 0;
-                    }
-                    alphaFB = (int)((610 - boom)/3 + 25);
-                    sendCharUart1('A');      //Send 'A' for alphaFB
-                    intToCharUart1((int)alphaFB);       //intToChar converts the integer to four characters and sends them out on UART1
-                    PDC2--;         //Decrementing PDC2 moves the boom down
-                    delay(numDelayLoops);
-                    if(PDC2 < 6777)
-                    {
-                        PDC2 = 6777;        //We don't let PDC2 get less than 1658
-                    }
+                    break;
                 }
-                j = 0;
-                while(alphaFB < alpha)
+                else if(usbRxval[i] == 'l')     //'O' for out
                 {
-                    boom = bufferA[j];
-                    j++;
-                    if(j >= 8)
+                    j = 0;
+                    while(alphaFB > alpha)
                     {
-                        j = 0;
+                        boom = bufferA[j];
+                        j++;
+                        if(j >= 8)
+                        {
+                            j = 0;
+                        }
+                        alphaFB = (int)((610 - boom)/3 + 25);
+                        PDC2--;         //Decrementing PDC2 moves the boom down
+                        delay(numDelayLoops);
+                        if(PDC2 < 1658)
+                        {
+                            PDC2 = 1658;        //We don't let PDC2 get less than 1658
+                        }
                     }
-                    alphaFB = (int)((610 - boom)/3 + 25);
-                    sendCharUart1('A');      //Send 'A' for alphaFB
-                    intToCharUart1((int)alphaFB);       //intToChar converts the integer to four characters and sends them out on UART1
-                    PDC2++;         //Incrementing PDC2 moves the boom up
-                    delay(numDelayLoops);
-                    if(PDC2 > 15813)
+                    j = 0;
+                    while(alphaFB < alpha)
                     {
-                        PDC2 = 15813;        //We don't let PDC2 get greater than 3870
-                    }            
+                        boom = bufferA[j];
+                        j++;
+                        if(j >= 8)
+                        {
+                            j = 0;
+                        }
+                        alphaFB = (int)((610 - boom)/3 + 25);
+                        PDC2++;         //Incrementing PDC2 moves the boom up
+                        delay(numDelayLoops);
+                        if(PDC2 > 3870)
+                        {
+                            PDC2 = 3870;        //We don't let PDC2 get greater than 3870
+                        }            
+                    }
+                    xPrev = x;
+                    break;
                 }
-                break;
-            }
-            else if(usbRxval[i] == 'r')         //I for In
-            {
-                j = 0;
-                alpha = (int)((acos(x/12))*180/3.1416);
-                sendCharUart1('a');      //Send 'a' for alpha
-                intToCharUart1((int)alpha);       //intToChar converts the integer to four characters and sends them out on UART1
-                while(alphaFB > alpha)
+                else if(usbRxval[i] == 'r')         //I for In
                 {
-                    boom = bufferA[j];
-                    j++;
-                    if(j >= 8)
+                  //  while((x - xPrev) == 0);
+                    j = 0;
+                    alpha = (int)((acos(x/12))*180/3.1416);
+                    while(alphaFB > alpha)
                     {
-                        j = 0;
+                        boom = bufferA[j];
+                        j++;
+                        if(j >= 8)
+                        {
+                            j = 0;
+                        }
+                        alphaFB = (int)((610 - boom)/3 + 25);
+                        PDC2--;         //Decrementing PDC2 moves the boom down
+                        delay(numDelayLoops);
+                        if(PDC2 < 1658)
+                        {
+                            PDC2 = 1658;        //We don't let PDC2 get less than 1658
+                        }
                     }
-                    alphaFB = (int)((610 - boom)/3 + 25);
-                    sendCharUart1('A');      //Send 'A' for alphaFB
-                    intToCharUart1((int)alphaFB);       //intToChar converts the integer to four characters and sends them out on UART1
-                    PDC2--;         //Decrementing PDC2 moves the boom down
-                    delay(numDelayLoops);
-                    if(PDC2 < 6777)
+                    j = 0;
+                    while(alphaFB < alpha)
                     {
-                        PDC2 = 6777;        //We don't let PDC2 get less than 1658
+                        boom = bufferA[j];
+                        j++;
+                        if(j >= 8)
+                        {
+                            j = 0;
+                        }
+                        alphaFB = (int)((610 - boom)/3 + 25);
+                        PDC2++;         //Incrementing the duty cycle moves the boom up
+                        delay(numDelayLoops);
+                        if(PDC2 > 3870)
+                        {
+                            PDC2 = 3870;        //We don't let PDC2 get greater than 3870
+                        }             
                     }
+                    xPrev = x;
+                    break;
                 }
-                j = 0;
-                while(alphaFB < alpha)
-                {
-                    boom = bufferA[j];
-                    j++;
-                    if(j >= 8)
-                    {
-                        j = 0;
-                    }
-                    alphaFB = (int)((610 - boom)/3 + 25);
-                    sendCharUart1('A');      //Send 'A' for alphaFB
-                    intToCharUart1((int)alphaFB);       //intToChar converts the integer to four characters and sends them out on UART1
-                    PDC2++;         //Incrementing the duty cycle moves the boom up
-                    delay(numDelayLoops);
-                    if(PDC2 > 15813)
-                    {
-                        PDC2 = 15813;        //We don't let PDC2 get greater than 3870
-                    }             
-                }
-                break;
             }
         }
     }

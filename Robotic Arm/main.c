@@ -101,7 +101,7 @@ void main(void) {
   //  xTaskCreate( rotateThread, "Rotate", 512, NULL, 1, NULL );      //Thread that controls rotation
 	xTaskCreate( boomThread, "Boom", 512, NULL, 1, NULL );      //Thread that controls the boom
     xTaskCreate( feedbackThread, "Feedback", 512, NULL, 1, NULL );      //Thread that sends the ADC values to the Raspberry PI
-//    xTaskCreate( boomXDirThread, "Horizontal", 512, NULL, 1, NULL );        //Thread that controls horizontal kinematics
+    xTaskCreate( boomXDirThread, "Horizontal", 512, NULL, 1, NULL );        //Thread that controls horizontal kinematics
 	//Start the scheduler
 	vTaskStartScheduler();
 
