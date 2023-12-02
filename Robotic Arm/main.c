@@ -53,7 +53,7 @@ volatile char usbRxval[20];     //The UART receive array which holds the data se
                                 //via USB from the Raspberry Pi
 volatile char rxval[20];     //The UART receive array which holds the data sent 
                                 //via USB from the Raspberry Pi
-volatile double boom = 0;
+volatile double claw = 0;
 
 int x = 0, y = 0, up = 0, down = 0, left = 0, right = 0;
 
@@ -98,10 +98,11 @@ void main(void) {
     initTmr3();
     initDma0();
     
-  //  xTaskCreate( rotateThread, "Rotate", 512, NULL, 1, NULL );      //Thread that controls rotation
-	xTaskCreate( boomThread, "Boom", 512, NULL, 1, NULL );      //Thread that controls the boom
+    xTaskCreate( rotateThread, "Rotate", 512, NULL, 1, NULL );      //Thread that controls rotation
+    xTaskCreate( clawThread, "Claw", 256, NULL, 1, NULL );      //Thread that controls the tip motion
     xTaskCreate( feedbackThread, "Feedback", 512, NULL, 1, NULL );      //Thread that sends the ADC values to the Raspberry PI
-    xTaskCreate( boomXDirThread, "Horizontal", 512, NULL, 1, NULL );        //Thread that controls horizontal kinematics
+    xTaskCreate( rotateAutoThread, "Rotate Auto", 512, NULL, 1, NULL );
+   // xTaskCreate( boomXDirThread, "Horizontal", 512, NULL, 1, NULL );        //Thread that controls horizontal kinematics
 	//Start the scheduler
 	vTaskStartScheduler();
 
