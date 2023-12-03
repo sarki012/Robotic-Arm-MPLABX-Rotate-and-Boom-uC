@@ -19,8 +19,8 @@ void clawThread( void *pvParameters )
     int numDelayLoops = 1000;
  //   PHASE3 = 62500;
    // PDC3 = 10000;
-    PHASE3 = 36850;         //PHASEx is always 36,850 for a 50Hz pulse
-    PDC3 = 2500;            //Duty cycle register. Starting duty cycle is x. Max + PDCx = 1658, max - PDCx = 3870
+    PHASE2 = 36850;         //PHASEx is always 36,850 for a 50Hz pulse
+    PDC2 = 1800;            //Duty cycle register. Starting duty cycle is x. Max + PDCx = 1658, max - PDCx = 3870
     while(1)
     {
         for(i = 0; i < 20; i++)
@@ -29,22 +29,22 @@ void clawThread( void *pvParameters )
             {
                 break;
             }
-            else if(usbRxval[i] == 'n')
+            else if(usbRxval[i] == 'n')     //Claw open
             {
-                PDC3--;         //Decrementing the duty cycle moves the stick out
+                PDC2--;         //Decrementing the duty cycle opens the claw
                 delay(numDelayLoops);
-                if(PDC3 < 1658)
+                if(PDC2 < 1750)
                 {
-                    PDC3 = 1658;        //We don't let PDC2 get less than 1658
+                    PDC2 = 1750;        //We don't let PDC2 get less than 1658
                 }
             }
-            else if(usbRxval[i] == 'c')
+            else if(usbRxval[i] == 'c')     //Claw closed
             {
-                PDC3++;         //Incrementing the duty cycle moves the stick in
+                PDC2++;         //Incrementing the duty cycle closes the claw
                 delay(numDelayLoops);
-                if(PDC3 > 3870)
+                if(PDC2 > 2800)
                 {
-                    PDC3 = 3870;        //We don't let PDC2 get greater than 3870
+                    PDC2 = 2800;        //We don't let PDC2 get greater than 3870
                 } 
             }        
         }

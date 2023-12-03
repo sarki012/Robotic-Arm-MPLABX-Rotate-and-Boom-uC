@@ -54,6 +54,8 @@ volatile char usbRxval[20];     //The UART receive array which holds the data se
 volatile char rxval[20];     //The UART receive array which holds the data sent 
                                 //via USB from the Raspberry Pi
 volatile double claw = 0;
+volatile int clawFB[15];
+volatile int sendFlag = 0;
 
 int x = 0, y = 0, up = 0, down = 0, left = 0, right = 0;
 
@@ -81,10 +83,40 @@ void __attribute__((__interrupt__, auto_psv)) _U2RXInterrupt(void)
     }
     return;
  }
+
+void __attribute__ ((interrupt, auto_psv)) _AD1Interrupt(void)   
+{
+    // AD Conversion complete interrupt handler 
+    if(IFS0bits.AD1IF)
+    {
+        IFS0bits.AD1IF = 0;        // Clear ADC Interrupt Flag  
+        clawFB[0] = ADC1BUF0;
+        clawFB[1] = ADC1BUF1;
+        clawFB[2] = ADC1BUF2;
+        clawFB[3] = ADC1BUF3;
+        clawFB[4] = ADC1BUF4;
+        clawFB[5] = ADC1BUF5;
+        clawFB[6] = ADC1BUF6;
+        clawFB[7] = ADC1BUF7;
+        clawFB[8] = ADC1BUF8;
+        clawFB[9] = ADC1BUF9;
+        clawFB[10] = ADC1BUFA;
+        clawFB[11] = ADC1BUFB;
+        clawFB[12] = ADC1BUFC;
+        clawFB[13] = ADC1BUFD;
+        clawFB[14] = ADC1BUFE;
+        sendFlag = 1;
+         
+    }
+    return;                        
+}
+   
 void __attribute__((__interrupt__, auto_psv)) _DefaultInterrupt(void)
 {
+
     return;
 }
+
 
 void main(void) {
     int i = 0;
@@ -93,8 +125,12 @@ void main(void) {
         usbRxval[i] = 0;
         rxval[i] = 0;       //Initialize the receive array to all 0's
     }
+    for(int j = 0; j < 15; j++)
+    {
+        clawFB[j] = 0;
+    }
     init();     //Setup clock, UART, and PWMs
-    initAdc1();
+ //   initAdc1();
     initTmr3();
     initDma0();
     
