@@ -229,6 +229,32 @@ void init(void)
     FCLCON2bits.FLTMOD = 3;
     PTCONbits.PTEN = 1;         //PWM Module is enabled
 
-
+    ///////////////A/D////////////////////////////////
+    TRISAbits.TRISA0 = 1;       //Input AN0
+    
+    AD1CON1bits.ADON = 0;   //ADC is disabled before changing registers
+    AD1CON1bits.ADSIDL = 0;  //Continue operation in idle mode
+    AD1CON1bits.FORM   = 0;		// Data Output Format: Unsigned Integer
+    AD1CON1bits.SSRCG = 7;      //Auto convert
+    AD1CON1bits.ASAM = 1;       //Sampling begins immediately after the last conversion; SAMP bit is auto set.
+    
+    AD1CON2bits.VCFG = 0;       //VDD and VSS
+    AD1CON2bits.SMPI = 15;      // Generates interrupt after completion of every 16th sample/conversion operation
+    AD1CON3bits.ADRC = 1;       //ADC internal RC clock
+    AD1CON4bits.ADDMAEN = 0;        //Conversion results stored in ADC1BUF0 through ADC1BUFF registers
+    /*
+    AD1CHS0 = 0x0000;
+    AD1CHS123 = 0x0000;
+    AD1CSSH = 0x0000;
+    AD1CSSL = 0x0000;
+    AD1CSSH = 0x0000;
+     * */
+ //   AD1CSSHbits.CSS25 = 1;          //Enable AN0 for channel scan
+	AD1CSSLbits.CSS0 = 1;			// Enable AN0 for channel scan
+	
+	IFS0bits.AD1IF   = 0;		// Clear the A/D interrupt flag bit
+	IEC0bits.AD1IE   = 1;		// Enable A/D interrupt 
+	AD1CON1bits.ADON = 1;		// Turn on the A/D converter
+    
     return;
 }
