@@ -136,17 +136,16 @@ void init(void)
     ////////////////PWM Initialization///////////////////////////////
     PTCONbits.PTEN = 0;         //PWM Module is disabled before any code
     
-    TRISBbits.TRISB15 = 0;      //PWM1L is an output
-    TRISBbits.TRISB14 = 0;      //PWM1H is an output
-    TRISBbits.TRISB13 = 0;      //PWM2L is an output
-    TRISBbits.TRISB12 = 0;      //PWM2H is an output
+    TRISBbits.TRISB15 = 0;      //PWM1L is an output. Stepper
+    TRISBbits.TRISB14 = 0;      //PWM1H is an output. Stepper
+    TRISBbits.TRISB13 = 0;      //PWM2L is an output. Claw
+    TRISBbits.TRISB12 = 0;      //PWM2H is an output. Claw
     PORTBbits.RB15 = 0;         //Clear the output pin
     PORTBbits.RB14 = 0;         //Clear the output pin
     PORTBbits.RB13 = 0;         //Clear the output pin
     PORTBbits.RB12 = 0;         //Clear the output pin
     
-    PTCONbits.SYNCOEN = 0;      //SYNCO1 output is enabled
-    PTCONbits.SYNCEN = 0;       //External synchronization of primary time base is disabled
+
     PTCONbits.SYNCSRC0 = 0;     //Synchronous Source is PTGO17
     PTCONbits.SYNCSRC1 = 1;
     PTCONbits.SYNCSRC2 = 0;
@@ -167,8 +166,7 @@ void init(void)
     PWMCON2bits.MDCS = 0;       //PDC2 register provide duty cycle information for this PWM generator
     PWMCON1bits.FLTIEN = 0;     //Fault interrupt disabled
     PWMCON2bits.FLTIEN = 0;     //Fault interrupt disabled
-    PWMCON1bits.TRGIEN = 0;     //Trigger interrupt disabled
-    PWMCON2bits.TRGIEN = 0;     //Trigger interrupt disabled
+
     PWMCON1bits.CLIEN = 0;      //Current limit interrupt disabled
     PWMCON2bits.CLIEN = 0;      //Current limit interrupt disabled
     PWMCON1bits.MTBS = 0;       //Primary master time base
@@ -218,7 +216,7 @@ void init(void)
     IOCON1bits.OVRDAT = 0;
     IOCON2bits.OVRDAT = 0;
     IOCON3bits.OVRDAT = 0;
-    PTCONbits.SEIEN = 0;        //Special event interrupt disabled
+    
     DTR1 = 0;
     DTR2 = 0;
     ALTDTR1 = 0;
@@ -227,6 +225,36 @@ void init(void)
     FCLCON2 = 0x0000;
     FCLCON1bits.FLTMOD = 3;
     FCLCON2bits.FLTMOD = 3;
+    PTCONbits.SYNCOEN = 0;      //SYNCO1 output is enabled
+    PTCONbits.SYNCEN = 0;       //External synchronization of primary time base is disabled 
+    
+
+    PTCONbits.SEIEN = 0;        //Special event interrupt is enabled
+    PTCONbits.SESTAT = 0;     //0 = Special event interrupt is not pending
+    
+    PWMCON1bits.TRGIEN = 0;     //Trigger interrupt enabled for the stepper. 1 = A trigger event generates an interrupt request
+    PWMCON2bits.TRGIEN = 0;     //Trigger interrupt disabled
+    PWMCON1bits.TRGSTAT = 0;    //1 = Trigger interrupt is pending 0 = No trigger interrupt is pending
+    PWMCON2bits.TRGSTAT = 0;
+  
+/*
+    PTCONbits.SEIEN = 1;        //Special event interrupt is enabled
+    PTCONbits.SESTAT = 0;     //0 = Special event interrupt is not pending
+    PTCONbits.SEVTPS = 15;      //Postscaler generates Special Event Trigger on every sixteenth compare match event
+    SEVTCMP = 15;
+  */  
+    /*
+    PTCONbits.SYNCOEN = 1;      //SYNCO1 output is enabled
+    PTCONbits.SYNCEN = 0;       //External synchronization of primary time base is disabled
+    
+    PWMCON1bits.TRGIEN = 1;     //Trigger interrupt enabled for the stepper. 1 = A trigger event generates an interrupt request
+    PWMCON2bits.TRGIEN = 0;     //Trigger interrupt disabled
+    PWMCON1bits.TRGSTAT = 0;    //1 = Trigger interrupt is pending 0 = No trigger interrupt is pending
+    PWMCON2bits.TRGSTAT = 0;
+    TRGCON1bits.TRGDIV = 15;    //Trigger output for every 16th trigger event
+    TRGCON1bits.TRGSTRT = 0;    //Waits 0 PWM cycles before generating the first trigger event after the module is enabled 
+    TRIG1 = 100;
+    */
     PTCONbits.PTEN = 1;         //PWM Module is enabled
 
     ///////////////A/D////////////////////////////////

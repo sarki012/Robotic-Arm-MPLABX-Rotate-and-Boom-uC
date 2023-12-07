@@ -20,7 +20,7 @@ void clawThread( void *pvParameters )
  //   PHASE3 = 62500;
    // PDC3 = 10000;
     PHASE2 = 36850;         //PHASEx is always 36,850 for a 50Hz pulse
-    PDC2 = 1800;            //Duty cycle register. Starting duty cycle is x. Max + PDCx = 1658, max - PDCx = 3870
+    PDC2 = 2250;            //Duty cycle register. Starting duty cycle is x. Max + PDCx = 1658, max - PDCx = 3870
     while(1)
     {
         for(i = 0; i < 20; i++)
@@ -42,9 +42,9 @@ void clawThread( void *pvParameters )
             {
                 PDC2++;         //Incrementing the duty cycle closes the claw
                 delay(numDelayLoops);
-                if(PDC2 > 2800)
+                if(PDC2 > 3500)
                 {
-                    PDC2 = 2800;        //We don't let PDC2 get greater than 3870
+                    PDC2 = 3500;        //We don't let PDC2 get greater than 3870
                 } 
             }        
         }
