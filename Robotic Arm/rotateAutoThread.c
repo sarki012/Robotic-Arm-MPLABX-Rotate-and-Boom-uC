@@ -31,10 +31,12 @@ void rotateAutoThread( void *pvParameters )
                 {
                     PHASE1 = 6000;
                     PDC1 = 0;
+                   // SEVTCMP = 0;
                     break;
                 }
                 else if(usbRxval[i] == '}')     //Right
                 {
+                   // SEVTCMP = 0xFFFF;
                     //Rotate right
                     LATBbits.LATB0 = 0;     //Direction
                     //PHASE1 = 65534;

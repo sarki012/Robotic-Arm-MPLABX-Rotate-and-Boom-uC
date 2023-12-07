@@ -56,6 +56,7 @@ volatile char rxval[20];     //The UART receive array which holds the data sent
 volatile double claw = 0;
 volatile int clawFB[15];
 volatile int sendFlag = 0;
+volatile int rotateCount = 0;
 
 int x = 0, y = 0, up = 0, down = 0, left = 0, right = 0;
 
@@ -110,10 +111,29 @@ void __attribute__ ((interrupt, auto_psv)) _AD1Interrupt(void)
     }
     return;                        
 }
-   
+/*
+void __attribute__ ((interrupt, auto_psv)) _PWMInterrupt(void)   
+{
+    if(PWMCON1bits.TRGSTAT)
+    {
+        PWMCON1bits.TRGSTAT = 0;
+        rotateCount++;
+    }
+    
+    // AD Conversion complete interrupt handler 
+    if(PTCONbits.SESTAT)
+    {
+        PTCONbits.SESTAT = 0;
+        rotateCount++;
+    }
+      
+    return;                        
+}
+*/
 void __attribute__((__interrupt__, auto_psv)) _DefaultInterrupt(void)
 {
-
+    int k = 0;
+    k++;
     return;
 }
 
@@ -131,8 +151,8 @@ void main(void) {
     }
     init();     //Setup clock, UART, and PWMs
  //   initAdc1();
-    initTmr3();
-    initDma0();
+ //   initTmr3();
+   // initDma0();
     
     xTaskCreate( rotateThread, "Rotate", 512, NULL, 1, NULL );      //Thread that controls rotation
     xTaskCreate( clawThread, "Claw", 256, NULL, 1, NULL );      //Thread that controls the tip motion
